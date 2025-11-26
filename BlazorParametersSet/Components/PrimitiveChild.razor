@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNetCore.Components
+
+<div style="border:1px solid #4caf50; padding:4px; margin:4px;">
+    <strong>PrimitiveChild</strong><br />
+    Value: @Value <br />
+    OnParametersSet calls: @_onParametersSetCount
+</div>
+
+@code {
+    [Parameter] public int Value { get; set; }
+
+    private int _onParametersSetCount;
+
+    protected override void OnParametersSet()
+    {
+        _onParametersSetCount++;
+        Console.WriteLine( $"[PrimitiveChild] OnParametersSet #{_onParametersSetCount}, Value={Value}" );
+    }
+}

@@ -1,0 +1,37 @@
+﻿@using Microsoft.AspNetCore.Components
+
+<div style="border:1px solid #ff9800; padding:4px; margin:4px;">
+    <strong>RecordChild</strong><br />
+    Item: @Item <br />
+    OnParametersSet calls: @_onParametersSetCount <br />
+    Actual renders (ShouldRender = true): @_renderCount
+</div>
+
+@code {
+    [Parameter] public ItemRecord? Item { get; set; }
+
+    private int _onParametersSetCount;
+    private int _renderCount;
+    private ItemRecord? _lastItem;
+
+    protected override void OnParametersSet()
+    {
+        _onParametersSetCount++;
+        Console.WriteLine( $"[RecordChild] OnParametersSet #{_onParametersSetCount}, Item={Item}" );
+    }
+
+    protected override bool ShouldRender()
+    {
+        // Use record's value equality
+        if ( !Equals( _lastItem, Item ) )
+        {
+            _lastItem = Item;
+            _renderCount++;
+            Console.WriteLine( $"[RecordChild] ShouldRender TRUE #{_renderCount}, Item={Item}" );
+            return true;
+        }
+
+        Console.WriteLine( $"[RecordChild] ShouldRender FALSE, Item={Item}" );
+        return false;
+    }
+}

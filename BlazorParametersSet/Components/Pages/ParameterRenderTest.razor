@@ -1,0 +1,79 @@
+﻿@page "/parameter-render-test"
+@using Microsoft.AspNetCore.Components
+
+<h3>Blazor Parameter Render Test</h3>
+
+<p>
+    Parent render count: @_parentRenderCount
+</p>
+
+<div style="margin-bottom:8px;">
+    <button @onclick="ForceParentRerender">Parent StateHasChanged (no parameter changes)</button>
+    <button @onclick="ChangePrimitive">Change primitive</button>
+    <button @onclick="MutateClass">Mutate class property</button>
+    <button @onclick="ReplaceClassSameValues">Replace class (same values)</button>
+    <button @onclick="ChangeRecordWith">Change record with 'with'</button>
+    <button @onclick="ReplaceRecordSameValues">Replace record (same values)</button>
+</div>
+
+<hr />
+
+<PrimitiveChild Value="@_primitive" />
+
+<ClassChild Item="@_classItem" />
+
+<RecordChild Item="@_recordItem" />
+
+@code {
+    private int _parentRenderCount;
+
+    private int _primitive = 1;
+    private ItemClass _classItem = new() { Id = 1, Name = "Class A" };
+    private ItemRecord _recordItem = new( 1, "Record A" );
+
+    protected override void OnAfterRender( bool firstRender )
+    {
+        _parentRenderCount++;
+        Console.WriteLine( $"[Parent] Render #{_parentRenderCount}" );
+    }
+
+    private void ForceParentRerender()
+    {
+        Console.WriteLine( "[Parent] ForceParentRerender (no parameter changes)" );
+        StateHasChanged();
+    }
+
+    private void ChangePrimitive()
+    {
+        _primitive++;
+        Console.WriteLine( $"[Parent] ChangePrimitive -> {_primitive}" );
+    }
+
+    private void MutateClass()
+    {
+        _classItem.Name = _classItem.Name + "*";
+        Console.WriteLine( $"[Parent] MutateClass -> {_classItem}" );
+    }
+
+    private void ReplaceClassSameValues()
+    {
+        _classItem = new ItemClass
+        {
+            Id = _classItem.Id,
+            Name = _classItem.Name
+        };
+        Console.WriteLine( $"[Parent] ReplaceClassSameValues -> {_classItem}" );
+    }
+
+    private void ChangeRecordWith()
+    {
+        _recordItem = _recordItem with { Name = _recordItem.Name + "*" };
+        Console.WriteLine( $"[Parent] ChangeRecordWith -> {_recordItem}" );
+    }
+
+    private void ReplaceRecordSameValues()
+    {
+        _recordItem = new ItemRecord( _recordItem.Id, _recordItem.Name );
+        Console.WriteLine( $"[Parent] ReplaceRecordSameValues -> {_recordItem}" );
+    }
+}

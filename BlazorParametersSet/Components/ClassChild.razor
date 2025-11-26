@@ -1,0 +1,42 @@
+﻿@using Microsoft.AspNetCore.Components
+
+<div style="border:1px solid #2196f3; padding:4px; margin:4px;">
+    <strong>ClassChild</strong><br />
+    Item: @Item?.ToString() <br />
+    OnParametersSet calls: @_onParametersSetCount <br />
+    Actual renders (ShouldRender = true): @_renderCount
+</div>
+
+@code {
+    [Parameter] public ItemClass? Item { get; set; }
+
+    private int _onParametersSetCount;
+    private int _renderCount;
+
+    private record Snapshot( int Id, string? Name );
+    private Snapshot? _lastSnapshot;
+
+    protected override void OnParametersSet()
+    {
+        _onParametersSetCount++;
+        Console.WriteLine( $"[ClassChild] OnParametersSet #{_onParametersSetCount}, Item={Item}" );
+    }
+
+    protected override bool ShouldRender()
+    {
+        Snapshot? current = Item is null
+            ? null
+            : new Snapshot( Item.Id, Item.Name );
+
+        if ( !Equals( _lastSnapshot, current ) )
+        {
+            _lastSnapshot = current;
+            _renderCount++;
+            Console.WriteLine( $"[ClassChild] ShouldRender TRUE #{_renderCount}, Item={Item}" );
+            return true;
+        }
+
+        Console.WriteLine( $"[ClassChild] ShouldRender FALSE, Item={Item}" );
+        return false;
+    }
+}
